@@ -21,6 +21,14 @@ class Movement extends Model
         return $this->belongsTo(Product::class);
     }
 
+    public static function createForProduct(Product $product, int $qty): self
+    {
+        return $product->movements()->create([
+            'movement_uuid' => (string) Str::uuid(),
+            'qty' => $qty,
+        ]);
+    }
+
     protected static function booted(): void
     {
         static::creating(function (Movement $movement): void {

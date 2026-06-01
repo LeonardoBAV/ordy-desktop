@@ -2,7 +2,9 @@
 
 use App\Models\Movement;
 use App\Models\Product;
+use Database\Seeders\MovementSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Validation\ValidationException;
 
 uses(RefreshDatabase::class);
@@ -63,4 +65,23 @@ test('it allows movements for unlimited products', function () {
     ]);
 
     expect($movement->exists)->toBeTrue();
+});
+
+test('movement seeder respects product stock limits', function () {
+    foreach (range(1, 6) as $index) {
+        Product::create([
+            'sku' => "SKU-SEED-{$index}",
+            'name' => "Produto {$index}",
+            'stock_limit' => 10,
+        ]);
+    }
+
+    Artisan::call('db:seed', [
+        '--class' => MovementSeeder::class,
+    ]);
+
+    Product::all()
+        ->each(function (Product $product): void {
+            expect($product->totalQuantityUsed())->toBeLessThanOrEqual($product->stock_limit);
+        });
 });
