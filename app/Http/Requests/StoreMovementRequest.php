@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Movement;
 use App\Models\Product;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -27,7 +26,7 @@ class StoreMovementRequest extends FormRequest
     {
         return [
             'sku' => ['required', 'string', Rule::exists((new Product)->getTable(), 'sku')],
-            'movement_uuid' => ['required', 'uuid', Rule::unique((new Movement)->getTable(), 'movement_uuid')],
+            'movement_uuid' => ['required', 'uuid'],
             'qty' => ['required', 'integer'],
         ];
     }

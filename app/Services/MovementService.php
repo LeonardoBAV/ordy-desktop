@@ -11,7 +11,7 @@ class MovementService
     /**
      * @param  array{sku: string, movement_uuid: string, qty: int}  $data
      */
-    public function createFromSku(array $data): Movement
+    public function create(array $data): Movement
     {
         $product = Product::findBySku($data['sku']);
 
@@ -21,10 +21,33 @@ class MovementService
             ]);
         }
 
-        return Movement::create([
+        $movement = Movement::findByUuid($data['movement_uuid']);
+        $quantity = (int) $data['qty'];
+
+        if ($quantity === 0) {
+            if (! $movement instanceof Movement) {
+                throw ValidationException::withMessages([
+                    'movement_uuid' => __('validation.exists', ['attribute' => 'movement_uuid']),
+                ]);
+            }
+
+            $movement->deleteOrFail();
+
+            return $movement;
+        }
+
+        $attributes = [
             'product_id' => $product->getKey(),
             'movement_uuid' => $data['movement_uuid'],
-            'qty' => $data['qty'],
-        ]);
+            'qty' => $quantity,
+        ];
+
+        if ($movement instanceof Movement) {
+            $movement->update($attributes);
+
+            return $movement;
+        }
+
+        return Movement::create($attributes);
     }
 }

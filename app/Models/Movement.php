@@ -29,6 +29,13 @@ class Movement extends Model
         ]);
     }
 
+    public static function findByUuid(string $movementUuid): ?self
+    {
+        return self::query()
+            ->where('movement_uuid', $movementUuid)
+            ->first();
+    }
+
     protected static function booted(): void
     {
         static::creating(function (Movement $movement): void {

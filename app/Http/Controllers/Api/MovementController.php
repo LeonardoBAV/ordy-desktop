@@ -16,10 +16,10 @@ class MovementController extends Controller
      */
     public function __invoke(StoreMovementRequest $request, MovementService $movementService): JsonResponse
     {
-        $movement = $movementService->createFromSku($request->validated());
+        $movement = $movementService->create($request->validated());
 
         return MovementResource::make($movement)
             ->response()
-            ->setStatusCode(Response::HTTP_CREATED);
+            ->setStatusCode($movement->wasRecentlyCreated ? Response::HTTP_CREATED : Response::HTTP_OK);
     }
 }
