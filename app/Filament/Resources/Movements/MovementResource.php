@@ -23,7 +23,9 @@ class MovementResource extends Resource
 {
     protected static ?string $model = Movement::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedArrowsRightLeft;
+
+    protected static ?int $navigationSort = 20;
 
     protected static ?string $recordTitleAttribute = 'movement_uuid';
 

@@ -23,7 +23,9 @@ class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCube;
+
+    protected static ?int $navigationSort = 10;
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -48,11 +50,13 @@ class ProductResource extends Resource
             ->components([
                 TextInput::make('sku')
                     ->label(__('filamentphp-resources.resources.products.form.fields.sku.label'))
+                    ->disabledOn('edit')
                     ->required()
                     ->unique(ignoreRecord: true)
                     ->maxLength(255),
                 TextInput::make('name')
                     ->label(__('filamentphp-resources.resources.products.form.fields.name.label'))
+                    ->disabledOn('edit')
                     ->required()
                     ->maxLength(255),
                 TextInput::make('stock_limit')
