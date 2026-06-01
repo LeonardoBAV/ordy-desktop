@@ -34,11 +34,21 @@ return [
                     'name' => [
                         'label' => 'Name',
                     ],
+                    'stock' => [
+                        'label' => 'Stock',
+                    ],
                     'stock_limit' => [
-                        'label' => 'Stock limit',
+                        'label' => 'Reserved',
+                    ],
+                    'used_quantity' => [
+                        'label' => 'Used',
+                    ],
+                    'available_quantity' => [
+                        'label' => 'Available',
+                        'unlimited' => 'Unlimited',
                     ],
                     'unlimited' => [
-                        'label' => 'Unlimited stock',
+                        'label' => 'Unlimited',
                     ],
                     'created_at' => [
                         'label' => 'Created at',

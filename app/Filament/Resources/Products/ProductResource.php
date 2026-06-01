@@ -15,9 +15,11 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\ColumnGroup;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class ProductResource extends Resource
 {
@@ -42,6 +44,11 @@ class ProductResource extends Resource
     public static function getNavigationLabel(): string
     {
         return __('filamentphp-resources.resources.products.navigation.label');
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->withUsedQuantity();
     }
 
     public static function form(Schema $schema): Schema
@@ -83,13 +90,32 @@ class ProductResource extends Resource
                     ->label(__('filamentphp-resources.resources.products.table.columns.name.label'))
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('stock_limit')
-                    ->label(__('filamentphp-resources.resources.products.table.columns.stock_limit.label'))
-                    ->numeric()
-                    ->sortable(),
+                ColumnGroup::make(__('filamentphp-resources.resources.products.table.columns.stock.label'), [
+                    TextColumn::make('stock_limit')
+                        ->label(__('filamentphp-resources.resources.products.table.columns.stock_limit.label'))
+                        ->numeric()
+                        ->badge()
+                        ->color('gray')
+                        ->alignCenter()
+                        ->sortable(),
+                    TextColumn::make('used_quantity')
+                        ->label(__('filamentphp-resources.resources.products.table.columns.used_quantity.label'))
+                        ->state(fn (Product $record): int => $record->usedQuantity())
+                        ->numeric()
+                        ->badge()
+                        ->color('warning')
+                        ->alignCenter(),
+                    TextColumn::make('available_quantity')
+                        ->label(__('filamentphp-resources.resources.products.table.columns.available_quantity.label'))
+                        ->state(fn (Product $record): int|string => $record->availableQuantity() ?? __('filamentphp-resources.resources.products.table.columns.available_quantity.unlimited'))
+                        ->badge()
+                        ->color(fn (Product $record): string => $record->unlimited || $record->availableQuantity() > 0 ? 'success' : 'danger')
+                        ->alignCenter(),
+                ])->alignCenter(),
                 IconColumn::make('unlimited')
                     ->label(__('filamentphp-resources.resources.products.table.columns.unlimited.label'))
                     ->boolean()
+                    ->alignCenter()
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label(__('filamentphp-resources.resources.products.table.columns.created_at.label'))

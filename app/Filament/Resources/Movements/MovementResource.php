@@ -2,14 +2,9 @@
 
 namespace App\Filament\Resources\Movements;
 
-use App\Filament\Resources\Movements\Pages\CreateMovement;
-use App\Filament\Resources\Movements\Pages\EditMovement;
 use App\Filament\Resources\Movements\Pages\ListMovements;
 use App\Models\Movement;
 use BackedEnum;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
@@ -83,6 +78,7 @@ class MovementResource extends Resource
                 TextColumn::make('qty')
                     ->label(__('filamentphp-resources.resources.movements.table.columns.qty.label'))
                     ->numeric()
+                    ->alignCenter()
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label(__('filamentphp-resources.resources.movements.table.columns.created_at.label'))
@@ -98,16 +94,8 @@ class MovementResource extends Resource
             ->filters([
                 //
             ])
-            ->recordActions([
-                EditAction::make()
-                    ->label(__('filamentphp-resources.resources.movements.actions.edit.label')),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make()
-                        ->label(__('filamentphp-resources.resources.movements.actions.delete_selected.label')),
-                ]),
-            ]);
+            ->recordActions([])
+            ->toolbarActions([]);
     }
 
     public static function getRelations(): array
@@ -121,8 +109,6 @@ class MovementResource extends Resource
     {
         return [
             'index' => ListMovements::route('/'),
-            'create' => CreateMovement::route('/create'),
-            'edit' => EditMovement::route('/{record}/edit'),
         ];
     }
 }
