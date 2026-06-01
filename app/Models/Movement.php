@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Observers\MovementObserver;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 
+#[ObservedBy([MovementObserver::class])]
 #[Fillable(['product_id', 'movement_uuid', 'qty'])]
 class Movement extends Model
 {

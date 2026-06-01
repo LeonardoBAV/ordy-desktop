@@ -30,6 +30,18 @@ class Product extends Model
         return $this->hasMany(Movement::class);
     }
 
+    public static function findById(int $id): ?self
+    {
+        return self::find($id, ['*']);
+    }
+
+    public function totalQuantityUsed(?Movement $except = null): int
+    {
+        return (int) $this->movements()
+            ->when($except?->exists, fn ($query) => $query->whereKeyNot($except->getKey()))
+            ->sum('qty');
+    }
+
     /**
      * Get the attributes that should be cast.
      *
