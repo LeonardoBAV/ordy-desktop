@@ -13,7 +13,8 @@ class EditMovement extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make(),
+            DeleteAction::make()
+                ->label(__('filamentphp-resources.resources.movements.actions.delete.label')),
         ];
     }
 }

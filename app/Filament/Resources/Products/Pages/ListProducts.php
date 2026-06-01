@@ -15,8 +15,10 @@ class ListProducts extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()
+                ->label(__('filamentphp-resources.resources.products.actions.create.label')),
             ImportAction::make()
+                ->label(__('filamentphp-resources.resources.products.actions.import.label'))
                 ->importer(ProductImporter::class),
         ];
     }
