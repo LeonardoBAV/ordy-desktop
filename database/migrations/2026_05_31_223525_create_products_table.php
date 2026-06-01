@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('sku')->unique();
             $table->string('name');
             $table->integer('stock_limit')->default(0);
-            $table->boolean('unlimited')->default(true);
+            $table->boolean('unlimited')->default(false);
             $table->timestamps();
         });
     }
