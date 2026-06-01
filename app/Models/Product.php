@@ -45,6 +45,13 @@ class Product extends Model
         return self::find($id, ['*']);
     }
 
+    public static function findBySku(string $sku): ?self
+    {
+        return self::query()
+            ->where('sku', $sku)
+            ->first();
+    }
+
     public function totalQuantityUsed(?Movement $except = null): int
     {
         return (int) $this->movements()
