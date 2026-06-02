@@ -1,6 +1,31 @@
 <?php
 
 return [
+    'widgets' => [
+        'local_network' => [
+            'health' => [
+                'label' => 'API local',
+                'checking' => 'Verificando',
+                'checking_description' => 'Consultando :url pelo navegador.',
+                'success' => 'Online',
+                'failure' => 'Falha',
+                'no_url' => 'Não foi possível montar a URL da rede local.',
+                'request_failed' => 'Falha ao consultar :url',
+                'request_succeeded' => 'Health check OK em :url',
+                'unexpected_response' => 'Resposta inesperada da API: HTTP :status',
+            ],
+            'ip' => [
+                'label' => 'IP local',
+                'unavailable' => 'Indisponível',
+                'no_url' => 'URL da rede local indisponível',
+            ],
+            'host' => [
+                'label' => 'Host',
+                'unknown' => 'Host desconhecido',
+                'description' => ':os | :arch | porta :port',
+            ],
+        ],
+    ],
     'resources' => [
         'products' => [
             'navigation' => [
