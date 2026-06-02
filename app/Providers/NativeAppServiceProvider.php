@@ -2,8 +2,9 @@
 
 namespace App\Providers;
 
-use Native\Desktop\Facades\Window;
 use Native\Desktop\Contracts\ProvidesPhpIni;
+use Native\Desktop\Facades\Screen;
+use Native\Desktop\Facades\Window;
 
 class NativeAppServiceProvider implements ProvidesPhpIni
 {
@@ -13,7 +14,27 @@ class NativeAppServiceProvider implements ProvidesPhpIni
      */
     public function boot(): void
     {
-        Window::open();
+        $display = Screen::primary();
+        $workArea = $display['workArea'] ?? $display['bounds'] ?? null;
+
+        if ($workArea === null) {
+            Window::open()
+                ->showDevTools(false);
+
+            return;
+        }
+
+        $width = (int) floor($workArea['width'] * 2 / 3);
+        $height = (int) floor($workArea['height'] * 2 / 3);
+
+        Window::open()
+            ->width($width)
+            ->height($height)
+            ->position(
+                (int) floor($workArea['x'] + (($workArea['width'] - $width) / 2)),
+                (int) floor($workArea['y'] + (($workArea['height'] - $height) / 2)),
+            )
+            ->showDevTools(false);
     }
 
     /**
