@@ -1,0 +1,23 @@
+---
+description: Filament v5 and NativePHP desktop project guidance
+alwaysApply: true
+---
+
+# Filament + NativePHP Guidance
+
+- This app uses Laravel 13, Filament 5, Livewire 4, Tailwind 4, and NativePHP Desktop.
+- Before changing Filament code, consult Filament 5 documentation via https://filamentphp.com/docs/llms.txt or Laravel Boost `search-docs`.
+- Prefer Filament v5 APIs. Do not copy examples from Filament v3/v4 unless verified against v5 docs.
+- Use Filament Resources, Pages, Forms, Tables, Actions, Widgets, and Relation Managers following existing project conventions.
+- In NativePHP runtime, the default database is rewritten to `database/nativephp.sqlite`. For Artisan commands that must affect the desktop database, prefix with `NATIVEPHP_RUNNING=true`.
+- Do not edit files inside `vendor/`. Override behavior in app code or config.
+
+## NativePHP Local Network API
+
+- This app exposes a local-network API for mobile devices to connect to the desktop app, eventually through a QR Code.
+- The Laravel side lives in `App\Services\LocalNetworkService`, `GET /api/local-network`, and `GET /api/healthy`.
+- The LAN server should use `NATIVEPHP_PHP_SERVER_HOST=0.0.0.0` and `NATIVEPHP_PHP_SERVER_PORT=8000`, surfaced through `config/nativephp.php`.
+- NativePHP's default internal PHP server binds to `127.0.0.1` and a dynamic port; that is not reachable from phones/tablets on the LAN.
+- For NativePHP internals, use the published Electron project in `nativephp/electron/` (`php artisan native:install --publish`) and customize `nativephp/electron/electron-plugin/src/server/php.ts`.
+- After changing the Electron plugin, run `npm --prefix nativephp/electron run plugin:build` and restart `composer native:dev`.
+- Never patch `vendor/nativephp/desktop` for this behavior; published Electron code is the project-owned customization point.

@@ -6,7 +6,6 @@
 .phpactor.json
 .phpunit.result.cache
 /.codex
-/.cursor/
 /.idea
 /.nova
 /.phpunit.cache
@@ -28,6 +27,7 @@ Thumbs.db
 
 # NativePHP
 /nativephp/electron/dist/
+/nativephp/electron/node_modules/
 /build/
 /dist/
 nativephp_debug.json

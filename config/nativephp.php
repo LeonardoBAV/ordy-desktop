@@ -1,5 +1,7 @@
 <?php
 
+use App\Providers\NativeAppServiceProvider;
+
 return [
     /**
      * The version of your app.
@@ -51,7 +53,7 @@ return [
      * takes care of bootstrapping your application and configuring
      * any global hotkeys, menus, windows, etc.
      */
-    'provider' => \App\Providers\NativeAppServiceProvider::class,
+    'provider' => NativeAppServiceProvider::class,
 
     /**
      * A list of environment keys that should be removed from the
@@ -183,4 +185,12 @@ return [
      * Custom PHP binary path.
      */
     'binary_path' => env('NATIVEPHP_PHP_BINARY_PATH', null),
+
+    /**
+     * PHP server used by NativePHP to serve the Laravel application.
+     */
+    'php_server' => [
+        'host' => env('NATIVEPHP_PHP_SERVER_HOST', '127.0.0.1'),
+        'port' => env('NATIVEPHP_PHP_SERVER_PORT'),
+    ],
 ];

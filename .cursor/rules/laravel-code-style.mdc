@@ -1,0 +1,19 @@
+---
+description: Laravel PHP code style for attributes and model conventions
+globs: **/*.php
+alwaysApply: false
+---
+
+# Laravel Code Style
+
+- Prefer PHP attributes for Laravel model metadata when the framework supports them, unless the prompt asks for the traditional property or service-provider style.
+- Follow existing sibling files first. If a model already uses attributes, keep using attributes in that area.
+- Prefer `#[Fillable([...])]` for mass-assignable model fields instead of adding a `$fillable` property.
+- Prefer `#[ObservedBy([...])]` on the model to register observers instead of calling `Model::observe()` in a service provider.
+- Use related Eloquent attributes when they make the intent clearer, such as `#[Hidden([...])]`, `#[Guarded([...])]`, `#[ScopedBy([...])]`, `#[UseFactory(...)]`, `#[Table(...)]`, and `#[Connection(...)]`.
+- Keep model defaults in `$attributes` when database columns have defaults, and mirror casts in the `casts()` method.
+- Keep custom query construction inside models. Controllers, observers, Filament resources, actions, importers, commands, and seeders must not build `query()`, relationship chains, `where*`, `sum`, `count`, or similar Eloquent query logic themselves.
+- Exception: outer layers may call built-in Eloquent model APIs that already return records or perform a single operation, such as `Model::all()`, `Model::find()`, `Model::create()`, `Model::update()`, `Model::delete()`, `firstOrCreate()`, and `updateOrCreate()`. Do not wrap these in thin model aliases unless they add real behavior.
+- Models may expose custom data access and aggregate methods with neutral names, such as `totalQuantityUsed()`. These methods should answer data questions, not decide workflow outcomes.
+- Keep cross-model business rules in the application layer that owns the workflow, such as an observer, action, command, or service. That layer should combine model data methods, make the decision, and throw exceptions or trigger side effects when needed.
+- Do not introduce attributes just for novelty. If the prompt, framework support, or nearby code favors classic Laravel properties, match that style.

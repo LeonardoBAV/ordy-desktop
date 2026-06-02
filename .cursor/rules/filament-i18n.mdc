@@ -1,0 +1,14 @@
+---
+description: Filament resource translation organization
+globs: app/**/*.php
+alwaysApply: false
+---
+
+# Filament Resource I18n
+
+- Store Filament resource labels in `lang/{locale}/filamentphp-resources.php`.
+- Keep resource translations hierarchical: `resources.{resource}.{navigation,labels,form.fields,table.columns,infolist.entries,filters,actions,import}`.
+- Use PHP translation files for hierarchical resource keys. Do not use root `{locale}.json` for resource maps because Laravel JSON translations are flat.
+- In Resources and related importers, call `__('filamentphp-resources.resources...')` or `trans_choice('filamentphp-resources.resources...', $count)` instead of hardcoded UI text.
+- When adding a form field, table column, filter, action, infolist entry, or importer column, add matching `pt_BR` and `en` keys in the same hierarchy.
+- Keep generic package labels with Filament defaults unless the text is resource-specific.
