@@ -19,6 +19,12 @@ return [
                 'unavailable' => 'Indisponível',
                 'no_url' => 'URL da rede local indisponível',
             ],
+            'qr_code' => [
+                'label' => 'QR Code de acesso',
+                'alt' => 'QR Code para acessar :url',
+                'unavailable' => 'URL base indisponível para gerar o QR Code.',
+                'unavailable_short' => 'Indisponível',
+            ],
             'host' => [
                 'label' => 'Host',
                 'unknown' => 'Host desconhecido',
