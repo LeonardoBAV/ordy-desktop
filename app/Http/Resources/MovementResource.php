@@ -16,7 +16,7 @@ class MovementResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'product_id' => $this->product_id,
+            'sku' => $this->product->sku,
             'movement_uuid' => $this->movement_uuid,
             'qty' => $this->qty,
             'created_at' => $this->created_at,

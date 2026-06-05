@@ -17,6 +17,7 @@ class MovementController extends Controller
     public function __invoke(StoreMovementRequest $request, MovementService $movementService): JsonResponse
     {
         $movement = $movementService->create($request->validated());
+        $movement->load('product');
 
         return MovementResource::make($movement)
             ->response()
