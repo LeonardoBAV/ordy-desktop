@@ -30,4 +30,16 @@ class StoreMovementRequest extends FormRequest
             'qty' => ['required', 'integer'],
         ];
     }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'sku.exists' => __('inventory.products.not_found_for_movement'),
+        ];
+    }
 }
