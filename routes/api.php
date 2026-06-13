@@ -25,8 +25,11 @@ Route::get('healthy', function (LocalNetworkService $localNetworkService) use ($
     ], headers: $healthyCorsHeaders);
 })->name('healthy');
 
-Route::post('movements', CreateMovementController::class)
-    ->name('movements.store');
 
-Route::delete('movements', DestroyManyMovementsController::class)
-    ->name('movements.destroy');
+Route::prefix('movements')->name('movements.')->group(function (): void {
+    Route::post('/', CreateMovementController::class)
+        ->name('store');
+
+    Route::delete('/', DestroyManyMovementsController::class)
+        ->name('destroy');
+});
