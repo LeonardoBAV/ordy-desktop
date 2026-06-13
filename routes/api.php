@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\CreateManyMovementsController;
 use App\Http\Controllers\Api\CreateMovementController;
 use App\Http\Controllers\Api\DestroyManyMovementsController;
 use App\Services\LocalNetworkService;
@@ -25,8 +26,10 @@ Route::get('healthy', function (LocalNetworkService $localNetworkService) use ($
     ], headers: $healthyCorsHeaders);
 })->name('healthy');
 
-
 Route::prefix('movements')->name('movements.')->group(function (): void {
+    Route::post('many', CreateManyMovementsController::class)
+        ->name('store-many');
+
     Route::post('/', CreateMovementController::class)
         ->name('store');
 

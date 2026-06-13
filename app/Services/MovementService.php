@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\Movement;
 use App\Models\Product;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class MovementService
@@ -49,6 +51,20 @@ class MovementService
         }
 
         return Movement::create($attributes);
+    }
+
+    /**
+     * @param  array<int, array{sku: string, movement_uuid: string, qty: int}>  $movements
+     * @return Collection<int, Movement>
+     */
+    public function createMany(array $movements): Collection
+    {
+        return DB::transaction(function () use ($movements): Collection {
+            return new Collection(array_map(
+                fn (array $movement): Movement => $this->create($movement),
+                $movements,
+            ));
+        });
     }
 
     /**
