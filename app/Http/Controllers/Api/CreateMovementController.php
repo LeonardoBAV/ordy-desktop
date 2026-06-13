@@ -9,7 +9,7 @@ use App\Services\MovementService;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-class MovementController extends Controller
+class CreateMovementController extends Controller
 {
     /**
      * Handle the incoming request.

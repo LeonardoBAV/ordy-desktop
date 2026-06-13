@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Observers\MovementObserver;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
@@ -34,6 +35,20 @@ class Movement extends Model
         return self::query()
             ->where('movement_uuid', $movementUuid)
             ->first();
+    }
+
+    /**
+     * @param  array<int, string>  $movementUuids
+     */
+    public static function deleteByUuids(array $uuids): int
+    {
+        return self::query()
+            ->where(function (Builder $query) use ($uuids): void {
+                foreach ($uuids as $uuid) {
+                    $query->orWhere('movement_uuid', $uuid);
+                }
+            })
+            ->delete();
     }
 
     protected static function booted(): void

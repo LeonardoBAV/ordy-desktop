@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Controllers\Api\MovementController;
+use App\Http\Controllers\Api\CreateMovementController;
+use App\Http\Controllers\Api\DestroyManyMovementsController;
 use App\Services\LocalNetworkService;
 use Illuminate\Support\Facades\Route;
 
@@ -24,5 +25,8 @@ Route::get('healthy', function (LocalNetworkService $localNetworkService) use ($
     ], headers: $healthyCorsHeaders);
 })->name('healthy');
 
-Route::post('movements', MovementController::class)
+Route::post('movements', CreateMovementController::class)
     ->name('movements.store');
+
+Route::delete('movements', DestroyManyMovementsController::class)
+    ->name('movements.destroy');

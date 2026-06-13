@@ -50,4 +50,12 @@ class MovementService
 
         return Movement::create($attributes);
     }
+
+    /**
+     * @param  array<int, string>  $movementUuids
+     */
+    public function deleteMany(array $uuids): int
+    {
+        return Movement::deleteByUuids($uuids);
+    }
 }
