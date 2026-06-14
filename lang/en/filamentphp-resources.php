@@ -192,5 +192,69 @@ return [
                 ],
             ],
         ],
+        'printing' => [
+            'navigation' => [
+                'group' => 'Printing',
+            ],
+        ],
+        'queue_jobs' => [
+            'navigation' => [
+                'label' => 'Jobs',
+            ],
+            'labels' => [
+                'singular' => 'Job',
+                'plural' => 'Jobs',
+            ],
+            'table' => [
+                'columns' => [
+                    'id' => [
+                        'label' => 'ID',
+                    ],
+                    'display_name' => [
+                        'label' => 'Job',
+                    ],
+                    'queue' => [
+                        'label' => 'Queue',
+                    ],
+                    'attempts' => [
+                        'label' => 'Attempts',
+                    ],
+                    'available_at' => [
+                        'label' => 'Available at',
+                    ],
+                    'created_at' => [
+                        'label' => 'Created at',
+                    ],
+                ],
+            ],
+        ],
+        'failed_jobs' => [
+            'navigation' => [
+                'label' => 'Failed jobs',
+            ],
+            'labels' => [
+                'singular' => 'Failed job',
+                'plural' => 'Failed jobs',
+            ],
+            'table' => [
+                'columns' => [
+                    'id' => [
+                        'label' => 'ID',
+                    ],
+                    'display_name' => [
+                        'label' => 'Job',
+                    ],
+                    'queue' => [
+                        'label' => 'Queue',
+                    ],
+                    'exception' => [
+                        'label' => 'Error',
+                    ],
+                    'failed_at' => [
+                        'label' => 'Failed at',
+                    ],
+                ],
+            ],
+        ],
     ],
 ];

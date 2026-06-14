@@ -192,5 +192,69 @@ return [
                 ],
             ],
         ],
+        'printing' => [
+            'navigation' => [
+                'group' => 'Impressão',
+            ],
+        ],
+        'queue_jobs' => [
+            'navigation' => [
+                'label' => 'Jobs',
+            ],
+            'labels' => [
+                'singular' => 'Job',
+                'plural' => 'Jobs',
+            ],
+            'table' => [
+                'columns' => [
+                    'id' => [
+                        'label' => 'ID',
+                    ],
+                    'display_name' => [
+                        'label' => 'Job',
+                    ],
+                    'queue' => [
+                        'label' => 'Fila',
+                    ],
+                    'attempts' => [
+                        'label' => 'Tentativas',
+                    ],
+                    'available_at' => [
+                        'label' => 'Disponível em',
+                    ],
+                    'created_at' => [
+                        'label' => 'Criado em',
+                    ],
+                ],
+            ],
+        ],
+        'failed_jobs' => [
+            'navigation' => [
+                'label' => 'Jobs com falha',
+            ],
+            'labels' => [
+                'singular' => 'Job com falha',
+                'plural' => 'Jobs com falha',
+            ],
+            'table' => [
+                'columns' => [
+                    'id' => [
+                        'label' => 'ID',
+                    ],
+                    'display_name' => [
+                        'label' => 'Job',
+                    ],
+                    'queue' => [
+                        'label' => 'Fila',
+                    ],
+                    'exception' => [
+                        'label' => 'Erro',
+                    ],
+                    'failed_at' => [
+                        'label' => 'Falhou em',
+                    ],
+                ],
+            ],
+        ],
     ],
 ];

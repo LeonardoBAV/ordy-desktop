@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\CreateManyMovementsController;
 use App\Http\Controllers\Api\CreateMovementController;
 use App\Http\Controllers\Api\DestroyManyMovementsController;
+use App\Http\Controllers\Api\PrintController;
 use App\Services\LocalNetworkService;
 use Illuminate\Support\Facades\Route;
 
@@ -25,6 +26,9 @@ Route::get('healthy', function (LocalNetworkService $localNetworkService) use ($
         'healthy_url' => $baseUrl ? "{$baseUrl}/api/healthy" : null,
     ], headers: $healthyCorsHeaders);
 })->name('healthy');
+
+Route::post('print', PrintController::class)
+    ->name('print.store');
 
 Route::prefix('movements')->name('movements.')->group(function (): void {
     Route::post('many', CreateManyMovementsController::class)
