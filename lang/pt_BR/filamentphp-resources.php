@@ -31,6 +31,24 @@ return [
                 'description' => ':os | :arch | porta :port',
             ],
         ],
+        'queue_worker' => [
+            'status' => [
+                'label' => 'Fila de impressão',
+                'running' => 'Ativa',
+                'stopped' => 'Parada',
+                'unavailable' => 'Indisponível',
+                'unavailable_description' => 'O worker da fila só pode ser monitorado dentro do app desktop.',
+                'running_description' => 'Processo :alias ativo com PID :pid.',
+                'stopped_description' => 'O processo :alias não está em execução. Use o botão para iniciar novamente.',
+            ],
+            'actions' => [
+                'restart' => 'Reiniciar fila',
+            ],
+            'notifications' => [
+                'restarted' => 'Fila reiniciada',
+                'restart_failed' => 'Falha ao reiniciar fila',
+            ],
+        ],
     ],
     'resources' => [
         'products' => [
@@ -195,6 +213,42 @@ return [
         'printing' => [
             'navigation' => [
                 'group' => 'Impressão',
+            ],
+        ],
+        'print_settings' => [
+            'navigation' => [
+                'label' => 'Configurações',
+            ],
+            'labels' => [
+                'singular' => 'Configuração de impressão',
+                'plural' => 'Configurações de impressão',
+            ],
+            'form' => [
+                'fields' => [
+                    'method' => [
+                        'label' => 'Método de impressão',
+                    ],
+                    'copies' => [
+                        'label' => 'Número de cópias',
+                    ],
+                ],
+            ],
+            'options' => [
+                'methods' => [
+                    'electron' => 'Electron (Windows, Linux)',
+                    'native_windows' => 'Windows Nativo (Experimental)',
+                    'system_command' => 'Sistema de Comando (Linux, Windows+-)',
+                ],
+            ],
+            'actions' => [
+                'save' => [
+                    'label' => 'Salvar',
+                ],
+            ],
+            'notifications' => [
+                'saved' => [
+                    'title' => 'Configurações de impressão salvas',
+                ],
             ],
         ],
         'queue_jobs' => [

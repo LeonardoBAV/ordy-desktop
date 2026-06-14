@@ -31,6 +31,24 @@ return [
                 'description' => ':os | :arch | port :port',
             ],
         ],
+        'queue_worker' => [
+            'status' => [
+                'label' => 'Print queue',
+                'running' => 'Active',
+                'stopped' => 'Stopped',
+                'unavailable' => 'Unavailable',
+                'unavailable_description' => 'The queue worker can only be monitored inside the desktop app.',
+                'running_description' => 'Process :alias is active with PID :pid.',
+                'stopped_description' => 'Process :alias is not running. Use the button to start it again.',
+            ],
+            'actions' => [
+                'restart' => 'Restart queue',
+            ],
+            'notifications' => [
+                'restarted' => 'Queue restarted',
+                'restart_failed' => 'Failed to restart queue',
+            ],
+        ],
     ],
     'resources' => [
         'products' => [
@@ -195,6 +213,42 @@ return [
         'printing' => [
             'navigation' => [
                 'group' => 'Printing',
+            ],
+        ],
+        'print_settings' => [
+            'navigation' => [
+                'label' => 'Settings',
+            ],
+            'labels' => [
+                'singular' => 'Print setting',
+                'plural' => 'Print settings',
+            ],
+            'form' => [
+                'fields' => [
+                    'method' => [
+                        'label' => 'Print method',
+                    ],
+                    'copies' => [
+                        'label' => 'Number of copies',
+                    ],
+                ],
+            ],
+            'options' => [
+                'methods' => [
+                    'electron' => 'Electron (Windows, Linux)',
+                    'native_windows' => 'Windows Nativo (Experimental)',
+                    'system_command' => 'Sistema de Comando (Linux, Windows+-)',
+                ],
+            ],
+            'actions' => [
+                'save' => [
+                    'label' => 'Save',
+                ],
+            ],
+            'notifications' => [
+                'saved' => [
+                    'title' => 'Print settings saved',
+                ],
             ],
         ],
         'queue_jobs' => [

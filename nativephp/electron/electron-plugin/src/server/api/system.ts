@@ -1,7 +1,53 @@
 import { BrowserWindow, nativeTheme, safeStorage, systemPreferences } from 'electron';
 import express from 'express';
+import { pathToFileURL } from 'url';
 
 const router = express.Router();
+
+async function printPdfWithElectron(filePath: string, printer?: string, settings = {}): Promise<void> {
+    let printWindow: BrowserWindow | null = new BrowserWindow({
+        show: false,
+    });
+
+    const mergedSettings = {
+        silent: true,
+        printBackground: true,
+        deviceName: printer,
+        ...settings,
+    };
+
+    try {
+        await printWindow.loadURL(pathToFileURL(filePath).toString());
+
+        await new Promise<void>((resolve, reject) => {
+            printWindow.webContents.print(mergedSettings, (success, errorType) => {
+                if (success) {
+                    resolve();
+                    return;
+                }
+
+                reject(new Error(errorType || 'Print failed'));
+            });
+        });
+    } finally {
+        if (printWindow) {
+            printWindow.close();
+            printWindow = null;
+        }
+    }
+}
+
+async function printPdfWithNativeWindows(filePath: string, printer?: string, settings = {}): Promise<void> {
+    if (process.platform !== 'win32') {
+        throw new Error('Native Windows printing is only available on Windows.');
+    }
+
+    const importer = new Function('specifier', 'return import(specifier)');
+    const { PDFPrinter } = await importer('windows-pdf-printer-native');
+    const pdfPrinter = printer ? new PDFPrinter(printer) : new PDFPrinter();
+
+    await pdfPrinter.print(filePath, settings);
+}
 
 router.get('/can-prompt-touch-id', (req, res) => {
     res.json({
@@ -93,6 +139,53 @@ router.post('/print', async (req, res) => {
     });
 
     await printWindow.loadURL(`data:text/html;charset=UTF-8,${html}`);
+});
+
+router.post('/print-file', async (req, res) => {
+    const { filePath, printer, settings, copies = 1 } = req.body;
+
+    if (!filePath || typeof filePath !== 'string') {
+        res.status(422).json({
+            error: 'filePath is required.',
+        });
+        return;
+    }
+
+    try {
+        for (let copy = 0; copy < Math.max(1, Number(copies)); copy++) {
+            await printPdfWithElectron(filePath, printer, settings);
+        }
+
+        res.sendStatus(200);
+    } catch (e) {
+        res.status(500).json({
+            error: e.message,
+        });
+    }
+});
+
+router.post('/print-file-native-windows', async (req, res) => {
+    const { filePath, printer, settings, copies = 1 } = req.body;
+
+    if (!filePath || typeof filePath !== 'string') {
+        res.status(422).json({
+            error: 'filePath is required.',
+        });
+        return;
+    }
+
+    try {
+        await printPdfWithNativeWindows(filePath, printer, {
+            ...settings,
+            copies: Math.max(1, Number(copies)),
+        });
+
+        res.sendStatus(200);
+    } catch (e) {
+        res.status(500).json({
+            error: e.message,
+        });
+    }
 });
 
 router.post('/print-to-pdf', async (req, res) => {
