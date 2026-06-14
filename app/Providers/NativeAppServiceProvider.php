@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\User;
+use Database\Seeders\UserSeeder;
+use Illuminate\Support\Facades\Schema;
 use Native\Desktop\Contracts\ProvidesPhpIni;
 use Native\Desktop\Facades\Screen;
 use Native\Desktop\Facades\Window;
@@ -14,7 +17,21 @@ class NativeAppServiceProvider implements ProvidesPhpIni
      */
     public function boot(): void
     {
+        $this->seedInitialUserWhenMissing();
         $this->openWindow();
+    }
+
+    private function seedInitialUserWhenMissing(): void
+    {
+        if (! config('nativephp-internal.running')) {
+            return;
+        }
+
+        if (! Schema::hasTable('users') || User::query()->exists()) {
+            return;
+        }
+
+        app(UserSeeder::class)->run();
     }
 
     private function openWindow(): void
