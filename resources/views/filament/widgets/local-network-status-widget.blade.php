@@ -9,13 +9,7 @@
 
             @media (min-width: 768px) {
                 .local-network-status-widget {
-                    grid-template-columns: repeat(2, minmax(0, 1fr));
-                }
-            }
-
-            @media (min-width: 1280px) {
-                .local-network-status-widget {
-                    grid-template-columns: repeat(4, minmax(0, 1fr));
+                    grid-template-columns: repeat(3, minmax(0, 1fr));
                 }
             }
 
@@ -50,23 +44,6 @@
                 line-height: 1.25rem;
                 margin-top: 0.5rem;
                 overflow-wrap: anywhere;
-            }
-
-            .local-network-status-widget__qr {
-                align-items: center;
-                background: rgb(255 255 255);
-                border-radius: 0.75rem;
-                display: flex;
-                justify-content: center;
-                margin-top: 1rem;
-                padding: 0.75rem;
-                width: fit-content;
-            }
-
-            .local-network-status-widget__qr img {
-                display: block;
-                height: 8rem;
-                width: 8rem;
             }
 
             .local-network-status-widget__value--info {
@@ -181,29 +158,6 @@
             ></div>
 
             <div class="local-network-status-widget__description" x-text="description"></div>
-        </div>
-
-        <div class="local-network-status-widget__card">
-            <div class="local-network-status-widget__label">
-                {{ __('filamentphp-resources.widgets.local_network.qr_code.label') }}
-            </div>
-
-            <div class="local-network-status-widget__description">
-                {{ $baseUrl ?? __('filamentphp-resources.widgets.local_network.qr_code.unavailable') }}
-            </div>
-
-            @if ($qrCodeDataUri)
-                <div class="local-network-status-widget__qr">
-                    <img
-                        src="{{ $qrCodeDataUri }}"
-                        alt="{{ __('filamentphp-resources.widgets.local_network.qr_code.alt', ['url' => $baseUrl]) }}"
-                    >
-                </div>
-            @else
-                <div class="local-network-status-widget__value" data-status="warning">
-                    {{ __('filamentphp-resources.widgets.local_network.qr_code.unavailable_short') }}
-                </div>
-            @endif
         </div>
 
         <div class="local-network-status-widget__card">
