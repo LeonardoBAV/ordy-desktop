@@ -27,7 +27,7 @@ class ProductResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCube;
 
-    protected static ?int $navigationSort = 10;
+    protected static ?int $navigationSort = 41;
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -39,6 +39,11 @@ class ProductResource extends Resource
     public static function getPluralModelLabel(): string
     {
         return __('filamentphp-resources.resources.products.labels.plural');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('filamentphp-resources.resources.stock.navigation.group');
     }
 
     public static function getNavigationLabel(): string

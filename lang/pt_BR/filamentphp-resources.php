@@ -51,6 +51,11 @@ return [
         ],
     ],
     'resources' => [
+        'stock' => [
+            'navigation' => [
+                'group' => 'Estoque',
+            ],
+        ],
         'products' => [
             'navigation' => [
                 'label' => 'Produtos',

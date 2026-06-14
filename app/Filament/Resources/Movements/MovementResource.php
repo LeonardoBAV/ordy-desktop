@@ -20,7 +20,7 @@ class MovementResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedArrowsRightLeft;
 
-    protected static ?int $navigationSort = 20;
+    protected static ?int $navigationSort = 40;
 
     protected static ?string $recordTitleAttribute = 'movement_uuid';
 
@@ -32,6 +32,11 @@ class MovementResource extends Resource
     public static function getPluralModelLabel(): string
     {
         return __('filamentphp-resources.resources.movements.labels.plural');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('filamentphp-resources.resources.stock.navigation.group');
     }
 
     public static function getNavigationLabel(): string
