@@ -49,6 +49,27 @@ return [
                 'restart_failed' => 'Failed to restart queue',
             ],
         ],
+        'scancode_discovery' => [
+            'status' => [
+                'label' => 'Android UDP listener',
+                'running' => 'Active',
+                'stopped' => 'Stopped',
+                'stopped_hint' => 'Stopped does not mean disabled. The UDP process is not running right now.',
+                'unavailable' => 'Unavailable',
+                'disabled' => 'Disabled',
+                'running_description' => 'Process :alias is active with PID :pid, listening on :host::port.',
+                'stopped_description' => 'Process :alias is not running. Use the button to start listening on :host::port again.',
+                'unavailable_description' => 'The UDP listener on :host::port can only be monitored inside the desktop app.',
+                'disabled_description' => 'UDP discovery is disabled by SCANCODE_DISCOVERY_ENABLED.',
+            ],
+            'actions' => [
+                'restart' => 'Start / restart listener',
+            ],
+            'notifications' => [
+                'restarted' => 'UDP listener restarted',
+                'restart_failed' => 'Failed to restart UDP listener',
+            ],
+        ],
     ],
     'resources' => [
         'stock' => [

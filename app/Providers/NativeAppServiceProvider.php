@@ -14,6 +14,11 @@ class NativeAppServiceProvider implements ProvidesPhpIni
      */
     public function boot(): void
     {
+        $this->openWindow();
+    }
+
+    private function openWindow(): void
+    {
         $display = Screen::primary();
         $workArea = $display['workArea'] ?? $display['bounds'] ?? null;
 

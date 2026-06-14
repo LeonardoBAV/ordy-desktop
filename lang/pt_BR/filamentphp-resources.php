@@ -49,6 +49,27 @@ return [
                 'restart_failed' => 'Falha ao reiniciar fila',
             ],
         ],
+        'scancode_discovery' => [
+            'status' => [
+                'label' => 'Escuta UDP Android',
+                'running' => 'Ativa',
+                'stopped' => 'Parada',
+                'stopped_hint' => 'Parada não significa desativada. O processo UDP não está em execução neste momento.',
+                'unavailable' => 'Indisponível',
+                'disabled' => 'Desativada',
+                'running_description' => 'Processo :alias ativo com PID :pid, escutando em :host::port.',
+                'stopped_description' => 'O processo :alias não está em execução. Use o botão para iniciar novamente a escuta em :host::port.',
+                'unavailable_description' => 'A escuta UDP em :host::port só pode ser monitorada dentro do app desktop.',
+                'disabled_description' => 'A descoberta UDP está desativada por SCANCODE_DISCOVERY_ENABLED.',
+            ],
+            'actions' => [
+                'restart' => 'Iniciar / reiniciar escuta',
+            ],
+            'notifications' => [
+                'restarted' => 'Escuta UDP reiniciada',
+                'restart_failed' => 'Falha ao reiniciar escuta UDP',
+            ],
+        ],
     ],
     'resources' => [
         'stock' => [

@@ -193,4 +193,15 @@ return [
         'host' => env('NATIVEPHP_PHP_SERVER_HOST', '127.0.0.1'),
         'port' => env('NATIVEPHP_PHP_SERVER_PORT'),
     ],
+
+    /**
+     * UDP discovery responder used by the Android scanner app.
+     */
+    'scancode_discovery' => [
+        'enabled' => env('SCANCODE_DISCOVERY_ENABLED', true),
+        'host' => env('SCANCODE_DISCOVERY_HOST', '0.0.0.0'),
+        'port' => (int) env('SCANCODE_DISCOVERY_PORT', 34254),
+        'service' => env('SCANCODE_DISCOVERY_SERVICE', 'scancode-desktop'),
+        'url' => env('SCANCODE_DISCOVERY_URL'),
+    ],
 ];

@@ -6,6 +6,7 @@ alwaysApply: true
 # Filament + NativePHP Guidance
 
 - This app uses Laravel 13, Filament 5, Livewire 4, Tailwind 4, and NativePHP Desktop.
+- Before changing desktop printing, queue worker behavior, or Android UDP discovery, read `PRINTING_CONTEXT.md`.
 - Before changing Filament code, consult Filament 5 documentation via https://filamentphp.com/docs/llms.txt or Laravel Boost `search-docs`.
 - Prefer Filament v5 APIs. Do not copy examples from Filament v3/v4 unless verified against v5 docs.
 - Use Filament Resources, Pages, Forms, Tables, Actions, Widgets, and Relation Managers following existing project conventions.

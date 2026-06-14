@@ -1,6 +1,6 @@
-# Printing Implementation Context
+# Desktop Printing And UDP Discovery Context
 
-Este documento registra o contexto técnico da implementação de impressão para uma próxima sessão de IA. Ele deve ser lido antes de alterar `PrintJob`, a API `print`, as configurações de impressão, ou a camada NativePHP/Electron.
+Este documento registra o contexto técnico da implementação de impressão e descoberta UDP para uma próxima sessão de IA. Ele deve ser lido antes de alterar `PrintJob`, a API `print`, as configurações de impressão, a escuta UDP Android, ou a camada NativePHP/Electron.
 
 ## Objetivo Do Fluxo
 
@@ -340,6 +340,260 @@ Se o processo ainda não existir, o serviço chama `Native\Desktop\Facades\Queue
 
 Não recriar worker manual no plugin Electron; usar `config/nativephp.php` e os endpoints nativos de `child-process`.
 
+## Scancode UDP Discovery
+
+O app desktop também responde a descoberta automática feita pelos aplicativos Android na rede local.
+
+Objetivo:
+
+1. Android envia um broadcast UDP para descobrir o desktop.
+2. Desktop escuta continuamente em uma porta fixa.
+3. Desktop responde em unicast para o IP/porta de origem do Android.
+4. Android usa a URL recebida para chamar a API local do desktop.
+
+### Contrato De Rede
+
+Entrada esperada:
+
+```text
+Protocolo: UDP
+Destino Android -> Desktop: 255.255.255.255:34254
+Encoding: UTF-8
+Payload exato: SCANCODE_DISCOVERY_REQUEST
+```
+
+Importante:
+
+- O payload não é JSON.
+- Não há aspas.
+- Não há quebra de linha.
+- O desktop só deve responder quando o conteúdo for exatamente `SCANCODE_DISCOVERY_REQUEST`.
+
+Resposta do desktop:
+
+```json
+{
+  "service": "scancode-desktop",
+  "url": "http://192.168.0.20:3333"
+}
+```
+
+Na prática, a URL vem de:
+
+1. `SCANCODE_DISCOVERY_URL`, se configurada.
+2. Caso contrário, `App\Services\LocalNetworkService::baseUrl()`.
+
+### Arquivos Principais Do Discovery
+
+- `app/Console/Commands/ScancodeDiscoveryListenCommand.php`
+- `app/Services/ScancodeDiscoveryService.php`
+- `app/Services/ScancodeDiscoveryProcessService.php`
+- `app/Filament/Widgets/ScancodeDiscoveryStatusWidget.php`
+- `resources/views/filament/widgets/scancode-discovery-status-widget.blade.php`
+- `tests/Feature/ScancodeDiscoveryServiceTest.php`
+- `config/nativephp.php -> scancode_discovery`
+- `.env.example -> SCANCODE_DISCOVERY_*`
+- `lang/pt_BR/filamentphp-resources.php`
+- `lang/en/filamentphp-resources.php`
+
+### Configuração
+
+Chaves adicionadas em `config/nativephp.php`:
+
+```php
+'scancode_discovery' => [
+    'enabled' => env('SCANCODE_DISCOVERY_ENABLED', true),
+    'host' => env('SCANCODE_DISCOVERY_HOST', '0.0.0.0'),
+    'port' => (int) env('SCANCODE_DISCOVERY_PORT', 34254),
+    'service' => env('SCANCODE_DISCOVERY_SERVICE', 'scancode-desktop'),
+    'url' => env('SCANCODE_DISCOVERY_URL'),
+],
+```
+
+Valores documentados no `.env.example`:
+
+```text
+SCANCODE_DISCOVERY_ENABLED=true
+SCANCODE_DISCOVERY_HOST=0.0.0.0
+SCANCODE_DISCOVERY_PORT=34254
+SCANCODE_DISCOVERY_SERVICE=scancode-desktop
+SCANCODE_DISCOVERY_URL=
+```
+
+Use `SCANCODE_DISCOVERY_URL` apenas quando for necessário forçar uma URL específica. Se ficar vazio, o app calcula o IP local e a porta do servidor NativePHP.
+
+### Comando Listener
+
+Comando Artisan:
+
+```bash
+php artisan app:scancode-discovery-listen
+```
+
+Comportamento:
+
+- abre socket UDP em `SCANCODE_DISCOVERY_HOST:SCANCODE_DISCOVERY_PORT`;
+- fica em loop contínuo via `stream_socket_recvfrom()`;
+- responde via `stream_socket_sendto()` para o peer de origem;
+- não encerra após responder;
+- a opção `--once` existe apenas para teste manual.
+
+O socket **não deve** usar `so_reuseaddr=true`. Essa opção pode permitir múltiplos listeners UDP na mesma porta em Linux e mascarar duplicações. Se outro processo já estiver ocupando `34254`, o listener deve falhar ao bindar e logar o erro.
+
+### Processo NativePHP
+
+O listener roda como processo filho do Electron/NativePHP com alias:
+
+```text
+scancode_discovery
+```
+
+O processo deve ser iniciado por:
+
+```text
+App\Services\ScancodeDiscoveryProcessService::ensureRunning()
+```
+
+Padrão desejado:
+
+- usar `Native\Desktop\Facades\ChildProcess::artisan()`;
+- `persistent: true`;
+- nunca criar processo manualmente no plugin Electron;
+- não iniciar em múltiplos lugares sem proteção.
+
+Atualmente o start automático fica em:
+
+```text
+App\Providers\AppServiceProvider::bootScancodeDiscovery()
+```
+
+Ele só roda quando:
+
+- `config('nativephp-internal.running')` é verdadeiro;
+- a aplicação não está em console.
+
+`NativeAppServiceProvider` deve abrir a janela NativePHP, mas **não** deve iniciar outro discovery listener. Manter o start em um único fluxo evita start duplicado.
+
+### Proteção Contra Starts Duplicados
+
+O `ScancodeDiscoveryProcessService` possui proteções porque o Electron registra o PID de forma assíncrona:
+
+- flag estática por request;
+- cache `scancode_discovery_starting`;
+- lock `scancode_discovery:start`;
+- checagem `child-process/get/scancode_discovery` antes de iniciar.
+
+Motivo:
+
+Quando a UI faz refresh ou navega entre páginas, várias requisições podem ocorrer próximas. Sem proteção, o app poderia tentar iniciar o listener várias vezes antes do Electron registrar o primeiro PID.
+
+### Widget De Status
+
+Widget:
+
+```text
+App\Filament\Widgets\ScancodeDiscoveryStatusWidget
+```
+
+View:
+
+```text
+resources/views/filament/widgets/scancode-discovery-status-widget.blade.php
+```
+
+Estados:
+
+- `Ativa`: processo `scancode_discovery` tem PID registrado.
+- `Parada`: discovery está habilitado, mas o processo não está rodando.
+- `Desativada`: `SCANCODE_DISCOVERY_ENABLED=false`.
+- `Indisponível`: API interna do NativePHP não está disponível, normalmente fora do app desktop.
+
+Importante:
+
+`Parada` não significa desativada. Se estiver parada, o desktop não está escutando UDP e não responderá aos Androids.
+
+O widget deve consultar status, mas não deve iniciar o processo a cada renderização. O start automático fica no serviço/provider. O botão do widget pode chamar `restart()` para iniciar/reiniciar manualmente.
+
+### Diagnóstico Do Discovery UDP
+
+Verificar quem ocupa a porta:
+
+```bash
+ss -lunp 'sport = :34254'
+```
+
+Esperado quando o Ordy estiver saudável:
+
+```text
+php ... artisan app:scancode-discovery-listen
+```
+
+Se aparecer outro processo, por exemplo:
+
+```text
+node scripts/scancode-desktop-discovery-listener.js 34254 ...
+```
+
+então a porta está ocupada por outro listener e o processo PHP do Ordy não conseguirá estabilizar.
+
+Ver processos relacionados:
+
+```bash
+ps -eo pid,ppid,pgid,sid,stat,lstart,cmd | awk '/scancode-discovery-listen|scancode_discovery|queue:listen|queue:work/ && !/awk/ {print}'
+```
+
+Ver cgroup de um PID:
+
+```bash
+cat /proc/<PID>/cgroup
+```
+
+Se um processo órfão de sandbox do Cursor/Chromium ficar preso e `kill`/`sudo kill` falhar, conferir o cgroup owner. Em cgroup v2, quando o usuário for dono do cgroup, é possível matar todos os processos do cgroup com:
+
+```bash
+echo 1 > /sys/fs/cgroup/<cgroup-path>/cgroup.kill
+```
+
+Exemplo que ocorreu durante a implementação:
+
+```bash
+echo 1 > /sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/app-org.chromium.Chromium-4564.scope/cgroup.kill
+```
+
+Use esse comando com cuidado: ele mata todos os processos daquele cgroup, não apenas o listener.
+
+### Logs
+
+Logs esperados em `storage/logs/laravel.log`:
+
+- `Starting scancode discovery process.`
+- `Scancode discovery process start requested.`
+- `Scancode discovery UDP listener started.`
+- `Unable to bind scancode discovery UDP socket.`
+- `Scancode discovery response sent.`
+
+Se o PID muda a cada refresh, investigar primeiro:
+
+1. outra aplicação ocupando `34254`;
+2. listener caindo por erro de bind;
+3. watchdog `persistent: true` reiniciando processo após falha;
+4. start duplicado em providers/widgets.
+
+### Testes
+
+Teste principal:
+
+```bash
+php artisan test --compact --filter=ScancodeDiscoveryServiceTest
+```
+
+Esse teste cobre:
+
+- payload exato `SCANCODE_DISCOVERY_REQUEST`;
+- rejeição de payload com quebra de linha, espaço ou JSON;
+- geração do JSON de resposta;
+- override por `SCANCODE_DISCOVERY_URL`.
+
 ## Cuidados De Build E Runtime
 
 ### Compilar Plugin Electron
@@ -435,9 +689,15 @@ Também foram verificados lints nos arquivos alterados, sem erros.
 
 ## Observações Para Próxima IA
 
+- Antes de mexer em impressão, filas, local network ou discovery UDP, ler este arquivo inteiro.
 - Não remover os métodos de impressão sem alinhar com o usuário.
 - O default deve continuar sendo `PrintMethodEnum::Electron`.
 - Antes de alterar `PrintJob`, considerar que ela roda em queue e falhas devem ir para `failed_jobs`.
 - O queue worker deve continuar usando o suporte nativo do NativePHP (`config/nativephp.php` -> `queue_workers`) e o alias `queue_default`.
+- O discovery UDP deve continuar usando o alias `scancode_discovery`, a porta default `34254`, e o payload exato `SCANCODE_DISCOVERY_REQUEST`.
+- `Parada` no widget de discovery significa processo ausente, não funcionalidade desativada.
+- Se o PID do discovery muda em loop, verificar porta ocupada com `ss -lunp 'sport = :34254'` antes de alterar código.
+- Não usar `so_reuseaddr=true` no socket UDP do discovery; isso pode mascarar listeners duplicados.
+- O start automático do discovery deve ficar centralizado no `AppServiceProvider`, não duplicado no widget nem no `NativeAppServiceProvider`.
 - Não mexer em `vendor/nativephp/desktop`; customizações devem ficar em `nativephp/electron/`.
 - Depois de mexer no plugin Electron, sempre rodar `npm --prefix nativephp/electron run plugin:build`.
