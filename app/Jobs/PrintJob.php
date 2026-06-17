@@ -37,8 +37,6 @@ class PrintJob implements ShouldQueue
             PrintMethodEnum::NativeWindows => $this->printWithNativeWindows($path, $copies),
             PrintMethodEnum::SystemCommand => $this->printWithSystemCommand($path, $copies),
         };
-
-        $this->deletePrintedFile($path);
     }
 
     private function printWithElectron(string $path, int $copies): void
@@ -107,19 +105,6 @@ class PrintJob implements ShouldQueue
         }
 
         return Storage::disk('local')->path($this->path);
-    }
-
-    private function deletePrintedFile(string $absolutePath): void
-    {
-        if (! $this->isAbsolutePath($this->path)) {
-            Storage::disk('local')->delete($this->path);
-
-            return;
-        }
-
-        if (is_file($absolutePath)) {
-            @unlink($absolutePath);
-        }
     }
 
     private function isAbsolutePath(string $path): bool

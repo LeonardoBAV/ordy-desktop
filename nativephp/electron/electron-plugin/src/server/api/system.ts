@@ -4,23 +4,33 @@ import { pathToFileURL } from 'url';
 
 const router = express.Router();
 
+const PDF_PRINT_RENDER_DELAY_MS = process.platform === 'win32' ? 2000 : 750;
+
+function delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function printPdfWithElectron(filePath: string, printer?: string, settings = {}): Promise<void> {
     let printWindow: BrowserWindow | null = new BrowserWindow({
         show: false,
+        width: 800,
+        height: 600,
+        backgroundColor: '#FFFFFF',
     });
 
     const mergedSettings = {
         silent: true,
-        printBackground: true,
+        printBackground: false,
         deviceName: printer,
         ...settings,
     };
 
     try {
         await printWindow.loadURL(pathToFileURL(filePath).toString());
+        await delay(PDF_PRINT_RENDER_DELAY_MS);
 
         await new Promise<void>((resolve, reject) => {
-            printWindow.webContents.print(mergedSettings, (success, errorType) => {
+            printWindow!.webContents.print(mergedSettings, (success, errorType) => {
                 if (success) {
                     resolve();
                     return;
